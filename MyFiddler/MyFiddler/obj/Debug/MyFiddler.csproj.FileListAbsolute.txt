@@ -1,0 +1,10 @@
+F:\GitProject\FiddlerExtend\MyFiddler\MyFiddler\bin\Debug\MyFiddler.dll
+F:\GitProject\FiddlerExtend\MyFiddler\MyFiddler\bin\Debug\MyFiddler.pdb
+F:\GitProject\FiddlerExtend\MyFiddler\MyFiddler\bin\Debug\Fiddler.exe
+F:\GitProject\FiddlerExtend\MyFiddler\MyFiddler\bin\Debug\Xceed.Zip.v5.4.dll
+F:\GitProject\FiddlerExtend\MyFiddler\MyFiddler\bin\Debug\Xceed.FileSystem.v5.4.dll
+F:\GitProject\FiddlerExtend\MyFiddler\MyFiddler\bin\Debug\Telerik.Analytics.dll
+F:\GitProject\FiddlerExtend\MyFiddler\MyFiddler\bin\Debug\Xceed.Compression.Formats.v5.4.dll
+F:\GitProject\FiddlerExtend\MyFiddler\MyFiddler\bin\Debug\Xceed.Compression.v5.4.dll
+F:\GitProject\FiddlerExtend\MyFiddler\MyFiddler\obj\Debug\MyFiddler.dll
+F:\GitProject\FiddlerExtend\MyFiddler\MyFiddler\obj\Debug\MyFiddler.pdb
