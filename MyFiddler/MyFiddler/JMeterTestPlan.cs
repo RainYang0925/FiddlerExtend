@@ -146,8 +146,7 @@ namespace FiddlerExtensions
                 sb.Append("<boolProp name=\"HTTPSampler.DO_MULTIPART_POST\">false</boolProp>");
                 sb.Append("<boolProp name=\"HTTPSampler.monitor\">false</boolProp>");
                 sb.Append("<stringProp name=\"HTTPSampler.embedded_url_re\"></stringProp>");
-                sb.Append("</HTTPSamplerProxy>");
-                //sb.Append("<hashTree/>");
+                sb.Append("</HTTPSamplerProxy>");                
                 return sb.ToString();
             }
         }
