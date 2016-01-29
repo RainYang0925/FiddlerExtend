@@ -15,7 +15,7 @@ namespace FiddlerExtensions
     {
         // [1]
         private SessionList sessionList;
-        private Fiddler.Session[] sessions; // A Fiddler session represents a request/response pair
+        private Fiddler.Session[] sessions;
 
         public JMeterTestPlan()
         {
@@ -29,31 +29,28 @@ namespace FiddlerExtensions
             sessionList = new SessionList(oSessions);
         }
 
-        // [2] Return the final formatted JMX string
+
         public string Jmx
         {
             get
             {
                 StringBuilder sb = new StringBuilder();
                 sb.Append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-                // [3] Linq used to prettify the XML output because it's
-                // just a plain string with no formatting/indenting
-                XDocument doc = XDocument.Parse(this.Xml);
-                sb.Append(doc.ToString());
+                //XDocument doc = XDocument.Parse(this.Xml);
+                sb.Append(this.Xml);
                 return sb.ToString();
             }
         }
 
-        // Traverse all objects and request their XML representations.
         private string Xml
         {
             get
             {
                 StringBuilder sb = new StringBuilder();
-                // based upon the version I was using at the time of development
-                sb.Append("<jmeterTestPlan version=\"1.2\" properties=\"2.3\">");
-                // [4]
+                sb.Append("<jmeterTestPlan version=\"1.2\" properties=\"2.8\" jmeter=\"2.13 r1665067\">");
+                sb.Append("<hashTree>");
                 sb.Append(sessionList.Xml);
+                sb.Append("</hashTree>");
                 sb.Append("</jmeterTestPlan>");
                 return sb.ToString();
             }
@@ -85,12 +82,27 @@ namespace FiddlerExtensions
                 StringBuilder sb = new StringBuilder();
                 if (sessions.Length > 0)
                 {
-                    // [6]
+
+                    sb.Append("<LoopController guiclass=\"LoopControlPanel\" testclass=\"LoopController\" testname=\"06selectDeptToApprove\" enabled=\"true\">");
+                    sb.Append("<boolProp name=\"LoopController.continue_forever\">false</boolProp>");
+                    sb.Append("<stringProp name=\"LoopController.loops\">1</stringProp>");
+                    sb.Append("</LoopController>");
                     sb.Append("<hashTree>");
+                    //sb.Append("<stringProp name=\"TestPlan.comments\"></stringProp>");
+                    //sb.Append("<boolProp name=\"TestPlan.functional_mode\">false</boolProp>");
+                    //sb.Append("<boolProp name=\"TestPlan.serialize_threadgroups\">false</boolProp>");
+                    //sb.Append("<elementProp name=\"TestPlan.user_defined_variables\" elementType=\"Arguments\" guiclass=\"ArgumentsPanel\" testclass=\"Arguments\" testname=\"User Defined Variables\" enabled=\"true\">");
+                    //sb.Append("<collectionProp name=\"Arguments.arguments\"/>");
+                    //sb.Append("</elementProp>");
+                    //sb.Append("<stringProp name=\"TestPlan.user_define_classpath\"></stringProp>");
+
                     foreach (Fiddler.Session session in sessions)
                     {
-                        HTTPSamplerProxy httpSamplerProxy = new HTTPSamplerProxy(session);
-                        sb.Append(httpSamplerProxy.Xml);
+                        if (session.host.IndexOf("xherp") >= 0 && (session.responseCode == 200 || session.responseCode == 304))
+                        {
+                            HTTPSamplerProxy httpSamplerProxy = new HTTPSamplerProxy(session);
+                            sb.Append(httpSamplerProxy.Xml);
+                        }
                     }
                     sb.Append("</hashTree>");
                 }
@@ -106,6 +118,20 @@ namespace FiddlerExtensions
     {
         Fiddler.Session session;
 
+        public string EncodeXml(string strHtml)
+        {
+            if (string.IsNullOrEmpty(strHtml))
+                return "";
+
+            strHtml = strHtml.Replace("&", "&amp;");
+            strHtml = strHtml.Replace("<", "&lt;");
+            strHtml = strHtml.Replace(">", "&gt;");
+            strHtml = strHtml.Replace("'", "&apos;");
+            strHtml = strHtml.Replace("\"", "&quot;");
+            return strHtml;
+
+        }
+
         public HTTPSamplerProxy(Fiddler.Session session)
         {
             this.session = session;
@@ -117,36 +143,78 @@ namespace FiddlerExtensions
             get
             {
                 StringBuilder sb = new StringBuilder();
-                sb.Append(String.Format("<HTTPSamplerProxy guiclass=\"HttpTestSampleGui\" "
-                          + "testclass=\"HTTPSamplerProxy\" testname=\"{0}\" enabled=\"true\">"
-                          , Path));
-                sb.Append("<boolProp name=\"HTTPSampler.postBodyRaw\">true</boolProp>");
-                sb.Append("<elementProp name=\"HTTPsampler.Arguments\" elementType=\"Arguments\">");
-                sb.Append("<collectionProp name=\"Arguments.arguments\">");
-                sb.Append("<elementProp name=\"\" elementType=\"HTTPArgument\">");
-                sb.Append("<boolProp name=\"HTTPArgument.always_encode\">false</boolProp>");
-                sb.Append(String.Format("<stringProp name=\"Argument.value\">{0}</stringProp>", RequestBody));
-                sb.Append("<stringProp name=\"Argument.metadata\">=</stringProp>");
-                sb.Append("</elementProp>");
-                sb.Append("</collectionProp>");
-                sb.Append("</elementProp>");
-                sb.Append(String.Format("<stringProp name=\"HTTPSampler.domain\">{0}</stringProp>", session.host));
-                sb.Append(String.Format("<stringProp name=\"HTTPSampler.port\">{0}</stringProp>", Port));
+
+                string method = session.oRequest.headers.HTTPMethod.ToUpper();
+
+                string pathAndQuery = session.PathAndQuery;
+
+                sb.AppendFormat("<HTTPSamplerProxy guiclass=\"HttpTestSampleGui\" " + "testclass=\"HTTPSamplerProxy\" testname=\"{0}\" enabled=\"true\">", Path);
+
+                if (pathAndQuery.IndexOf("?") >= 0 && method == "GET")
+                {
+                    sb.Append("<elementProp name=\"HTTPsampler.Arguments\" elementType=\"Arguments\" guiclass=\"HTTPArgumentsPanel\" testclass=\"Arguments\" testname=\"User Defined Variables\" enabled=\"true\">");
+                    sb.Append("<collectionProp name=\"Arguments.arguments\">");
+                    string query = pathAndQuery.Substring(pathAndQuery.LastIndexOf('?') + 1);
+                    string[] paramArray = query.Split('&');
+                    foreach (string pa in paramArray)
+                    {
+                        var paArray = pa.Split('=');
+                        if (paArray.Length < 2)
+                            continue;
+                        sb.AppendFormat("<elementProp name=\"{0}\" elementType=\"HTTPArgument\">", paArray[0]);
+                        sb.Append("<boolProp name=\"HTTPArgument.always_encode\">false</boolProp>");
+                        sb.AppendFormat("<stringProp name=\"Argument.value\">{0}</stringProp>", paArray[1]);
+                        sb.Append("<stringProp name=\"Argument.metadata\">=</stringProp>");
+                        sb.AppendFormat("<stringProp name=\"Argument.name\">{0}</stringProp>", paArray[0]);
+                        sb.Append("</elementProp>");
+                    }
+                    sb.Append("</collectionProp>");
+                    sb.Append("</elementProp>");
+                }
+                else
+                {
+                    sb.Append("<boolProp name=\"HTTPSampler.postBodyRaw\">true</boolProp>");
+                    sb.Append("<elementProp name=\"HTTPsampler.Arguments\" elementType=\"Arguments\">");
+                    sb.Append("<collectionProp name=\"Arguments.arguments\">");
+                    sb.Append("<elementProp name=\"\" elementType=\"HTTPArgument\">");
+                    sb.Append("<boolProp name=\"HTTPArgument.always_encode\">false</boolProp>");
+                    sb.AppendFormat("<stringProp name=\"Argument.value\">{0}</stringProp>", RequestBody);
+                    sb.Append("<stringProp name=\"Argument.metadata\">=</stringProp>");
+                    sb.Append("</elementProp>");
+                    sb.Append("</collectionProp>");
+                    sb.Append("</elementProp>");
+                }
+
+
+                sb.AppendFormat("<stringProp name=\"HTTPSampler.domain\">{0}</stringProp>", session.hostname);
+                sb.AppendFormat("<stringProp name=\"HTTPSampler.port\">{0}</stringProp>", Port);
                 sb.Append("<stringProp name=\"HTTPSampler.connect_timeout\"></stringProp>");
                 sb.Append("<stringProp name=\"HTTPSampler.response_timeout\"></stringProp>");
-                sb.Append(String.Format("<stringProp name=\"HTTPSampler.protocol\">{0}</stringProp>"
-                          , session.oRequest.headers.UriScheme));
+                sb.AppendFormat("<stringProp name=\"HTTPSampler.protocol\">{0}</stringProp>", session.oRequest.headers.UriScheme);
                 sb.Append("<stringProp name=\"HTTPSampler.contentEncoding\"></stringProp>");
-                sb.Append(String.Format("<stringProp name=\"HTTPSampler.path\">{0}</stringProp>", Path));
-                sb.Append(String.Format("<stringProp name=\"HTTPSampler.method\">{0}</stringProp>"
-                          , session.oRequest.headers.HTTPMethod.ToUpper()));
-                sb.Append("<boolProp name=\"HTTPSampler.follow_redirects\">true</boolProp>");
-                sb.Append("<boolProp name=\"HTTPSampler.auto_redirects\">false</boolProp>");
+
+                if (method == "GET")
+                {
+                    sb.AppendFormat("<stringProp name=\"HTTPSampler.path\">{0}</stringProp>", Path);
+                }
+                else
+                {
+                    sb.AppendFormat("<stringProp name=\"HTTPSampler.path\">{0}</stringProp>", this.EncodeXml(session.PathAndQuery));
+                }
+
+
+
+                sb.AppendFormat("<stringProp name=\"HTTPSampler.method\">{0}</stringProp>", method);
+
+                sb.Append("<boolProp name=\"HTTPSampler.follow_redirects\">false</boolProp>");
+                sb.Append("<boolProp name=\"HTTPSampler.auto_redirects\">true</boolProp>");
                 sb.Append("<boolProp name=\"HTTPSampler.use_keepalive\">true</boolProp>");
                 sb.Append("<boolProp name=\"HTTPSampler.DO_MULTIPART_POST\">false</boolProp>");
+                sb.Append("<stringProp name=\"HTTPSampler.implementation\">Java</stringProp>");
                 sb.Append("<boolProp name=\"HTTPSampler.monitor\">false</boolProp>");
                 sb.Append("<stringProp name=\"HTTPSampler.embedded_url_re\"></stringProp>");
-                sb.Append("</HTTPSamplerProxy>");                
+                sb.Append("</HTTPSamplerProxy>");
+                sb.Append("<hashTree/>");
                 return sb.ToString();
             }
         }
@@ -155,7 +223,12 @@ namespace FiddlerExtensions
         {
             get
             {
-                return System.Net.WebUtility.HtmlEncode(session.PathAndQuery);
+                string pathAndQuery = session.PathAndQuery;
+                if (pathAndQuery.IndexOf("?") >= 0)
+                {
+                    pathAndQuery = pathAndQuery.Split('?')[0];
+                }
+                return System.Net.WebUtility.HtmlEncode(pathAndQuery);
             }
         }
 

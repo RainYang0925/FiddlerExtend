@@ -4,16 +4,11 @@ using System.Text;
 using System.IO;
 using System.Windows.Forms;
 using Fiddler;
-// [1]
+
 [assembly: Fiddler.RequiredVersion("4.6.2.0")]
 
 namespace FiddlerExtensions
 {
-    /// <summary>
-    /// Uses the Fiddler GUI to obtain the filename to export and writes to the
-    /// Fiddler log tab, so it cannot be used with FiddlerCore.
-    /// </summary>
-    // [2]
     [ProfferFormat("JMeter", "JMeter .jmx Format")]
     public class JMeterExporter : ISessionExporter
     {

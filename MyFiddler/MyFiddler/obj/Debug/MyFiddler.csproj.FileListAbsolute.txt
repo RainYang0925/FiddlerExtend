@@ -8,3 +8,12 @@ F:\GitProject\FiddlerExtend\MyFiddler\MyFiddler\bin\Debug\Xceed.Compression.Form
 F:\GitProject\FiddlerExtend\MyFiddler\MyFiddler\bin\Debug\Xceed.Compression.v5.4.dll
 F:\GitProject\FiddlerExtend\MyFiddler\MyFiddler\obj\Debug\MyFiddler.dll
 F:\GitProject\FiddlerExtend\MyFiddler\MyFiddler\obj\Debug\MyFiddler.pdb
+E:\FiddlerExtend\MyFiddler\MyFiddler\bin\Debug\MyFiddler.dll
+E:\FiddlerExtend\MyFiddler\MyFiddler\bin\Debug\MyFiddler.pdb
+E:\FiddlerExtend\MyFiddler\MyFiddler\bin\Debug\Fiddler.exe
+E:\FiddlerExtend\MyFiddler\MyFiddler\bin\Debug\Xceed.Zip.v5.4.dll
+E:\FiddlerExtend\MyFiddler\MyFiddler\bin\Debug\Xceed.FileSystem.v5.4.dll
+E:\FiddlerExtend\MyFiddler\MyFiddler\bin\Debug\Xceed.Compression.Formats.v5.4.dll
+E:\FiddlerExtend\MyFiddler\MyFiddler\bin\Debug\Xceed.Compression.v5.4.dll
+E:\FiddlerExtend\MyFiddler\MyFiddler\obj\Debug\MyFiddler.dll
+E:\FiddlerExtend\MyFiddler\MyFiddler\obj\Debug\MyFiddler.pdb
