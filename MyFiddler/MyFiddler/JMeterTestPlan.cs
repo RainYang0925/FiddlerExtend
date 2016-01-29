@@ -5,6 +5,8 @@ using System.Text;
 using System.Xml.Serialization;
 using System.Xml.Linq;
 using System.IO;
+using System.Configuration;
+using System.Xml;
 
 namespace FiddlerExtensions
 {
@@ -96,9 +98,11 @@ namespace FiddlerExtensions
                     //sb.Append("</elementProp>");
                     //sb.Append("<stringProp name=\"TestPlan.user_define_classpath\"></stringProp>");
 
+                    string configHost = getConfig("host");
+
                     foreach (Fiddler.Session session in sessions)
                     {
-                        if (session.host.IndexOf("xherp") >= 0 && (session.responseCode == 200 || session.responseCode == 304))
+                        if (session.host.IndexOf(configHost) >= 0 && (session.responseCode == 200 || session.responseCode == 304))
                         {
                             HTTPSamplerProxy httpSamplerProxy = new HTTPSamplerProxy(session);
                             sb.Append(httpSamplerProxy.Xml);
@@ -108,6 +112,15 @@ namespace FiddlerExtensions
                 }
                 return sb.ToString();
             }
+        }
+
+        public string getConfig(string key) {
+            string dic = Path.Combine(System.IO.Directory.GetCurrentDirectory(), "ImportExport");
+            string path = dic + "/app.config";
+            XmlDocument doc = new XmlDocument(); 
+            doc.Load(path);
+            var node = doc.SelectSingleNode("configuration/appSettings/add[@key='" + key + "']");
+            return node.Attributes["value"].Value.ToString();
         }
     }
 
