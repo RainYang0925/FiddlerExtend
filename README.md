@@ -6,6 +6,7 @@
 
   clone项目后，编译。将bin下面的MyFiddler.dll复制到Fiddler的安装目录：X:\Fiddler2\ImportExport
   还需要做host配置，将项目中app.config文件也一起复制到ImportExport目录下，配置  
+  
   ```xml
   <?xml version="1.0" encoding="utf-8" ?>
   <configuration>
@@ -13,6 +14,7 @@
         <add key="host" value="your host"/>
       </appSettings>
   </configuration>
+  ```
   
 # 使用方法
 
