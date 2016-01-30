@@ -18,3 +18,5 @@ E:\FiddlerExtend\MyFiddler\MyFiddler\bin\Debug\Xceed.Compression.v5.4.dll
 E:\FiddlerExtend\MyFiddler\MyFiddler\obj\Debug\MyFiddler.dll
 E:\FiddlerExtend\MyFiddler\MyFiddler\obj\Debug\MyFiddler.pdb
 E:\FiddlerExtend\MyFiddler\MyFiddler\bin\Debug\MyFiddler.dll.config
+F:\GitProject\FiddlerExtend\MyFiddler\MyFiddler\obj\Debug\MyFiddler.csprojResolveAssemblyReference.cache
+F:\GitProject\FiddlerExtend\MyFiddler\MyFiddler\bin\Debug\MyFiddler.dll.config

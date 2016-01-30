@@ -4,10 +4,11 @@ using System.Text;
 using System.IO;
 using System.Windows.Forms;
 using Fiddler;
+using MyFiddler.JMeter;
 
 [assembly: Fiddler.RequiredVersion("4.6.2.0")]
 
-namespace FiddlerExtensions
+namespace MyFiddler.FiddlerExtensions
 {
     [ProfferFormat("JMeter", "JMeter .jmx Format")]
     public class JMeterExporter : ISessionExporter
@@ -29,15 +30,10 @@ namespace FiddlerExtensions
             {
 
                 Encoding encUTF8NoBOM = new UTF8Encoding(false);
-                // [4]
                 JMeterTestPlan jMeterTestPlan = new JMeterTestPlan(oSessions, sFilename);
                 System.IO.StreamWriter sw = new StreamWriter(sFilename, false, encUTF8NoBOM);
-                // [5]
-                sw.Write(jMeterTestPlan.Jmx);
+                sw.Write(jMeterTestPlan.getJmx());
                 sw.Close();
-
-                Fiddler.FiddlerApplication.Log.LogString("Successfully exported sessions to JMeter Test Plan");
-                Fiddler.FiddlerApplication.Log.LogString(String.Format("\t{0}", sFilename));
             }
             catch (Exception eX)
             {

@@ -44,9 +44,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="HTTPSamplerProxy.cs" />
     <Compile Include="JMeterExporter.cs" />
     <Compile Include="JMeterTestPlan.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SessionList.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
